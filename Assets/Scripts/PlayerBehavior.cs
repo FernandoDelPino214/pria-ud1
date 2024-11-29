@@ -18,6 +18,11 @@ public class PlayerBehavior : MonoBehaviour
     private CapsuleCollider _col;
     
     private Rigidbody _rb;
+
+    public GameObject Bullet;
+    public float BulletSpeed = 100f;
+
+    private bool _isShooting;
     
     void Start()
     {
@@ -28,6 +33,7 @@ public class PlayerBehavior : MonoBehaviour
 
     void Update()
     {
+        _isShooting |= Input.GetKeyDown(KeyCode.Space);
         _isJumping |= Input.GetKeyDown(KeyCode.Z);
         vInput = Input.GetAxis("Vertical") * moveSpeed;
         hInput = Input.GetAxis("Horizontal") * rotateSpeed;
@@ -58,6 +64,16 @@ public class PlayerBehavior : MonoBehaviour
         if (_isJumping && isGrounded())
         {
             _rb.AddForce(Vector3.up * JumpVelocity, ForceMode.Impulse);
+        }
+
+        if (_isShooting)
+        {
+            // instanciar objeto prefab 'Bullet' con la posición del jugador + 1 en Y y con la rotacion del jugador
+            GameObject newBullet = Instantiate(Bullet, this.transform.position + new Vector3(0, 0, 1), this.transform.rotation);
+            Rigidbody BulletRB = newBullet.GetComponent<Rigidbody>();
+            BulletRB.velocity = this.transform.forward * BulletSpeed;
+
+            _isShooting = false;
         }
 
         _isJumping = false;
